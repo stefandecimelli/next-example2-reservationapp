@@ -1,4 +1,4 @@
-import React from 'react'
+"use client"
 
 export default function Reviews() {
     return (
@@ -30,7 +30,6 @@ export default function Reviews() {
                         </div>
                     </div>
                 </div>
-                {/* REVIEW CARD */}
             </div>
         </div>
     )
