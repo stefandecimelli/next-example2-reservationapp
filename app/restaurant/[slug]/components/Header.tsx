@@ -1,11 +1,16 @@
+import NavBar from "../../../components/NavBar";
+
 export default function Header() {
     return (
-        <div className="h-96 overflow-hidden">
-            <div className="bg-center bg-gradient-to-r from-[#0f1f47] to-[#5f6984] h-full flex justify-center items-center">
-                <h1 className="text-7xl text-white captitalize text-shadow text-center">
-                    Milestones Grill (Toronto)
-                </h1>
+        <>
+            <NavBar />
+            <div className="overflow-hidden h-96">
+                <div className="bg-center bg-gradient-to-r from-[#0f1f47] to-[#5f6984] h-full flex justify-center items-center">
+                    <h1 className="text-center text-white text-7xl captitalize text-shadow">
+                        Milestones Grill (Toronto)
+                    </h1>
+                </div>
             </div>
-        </div>
+        </>
     )
 }
