@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import AuthModelInputs from './AuthModelInputs';
+import { render } from 'react-dom';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -25,6 +26,19 @@ export default function AuthModel({ isSignIn }: { isSignIn: boolean }) {
         return isSignIn ? signInContent : signUpContent;
     }
 
+    const handleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
+        setinputs({...inputs, [e.target.name]: e.target.value})
+    }
+
+    const [inputs, setinputs] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        city: "",
+        password: ""
+    });
+
     return (
         <div>
             <button className={`${renderContent("bg-blue-400 text-white border", "")} p-1 px-4 rounded mr-3`} onClick={handleOpen}>
@@ -37,7 +51,7 @@ export default function AuthModel({ isSignIn }: { isSignIn: boolean }) {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                    <div className="p-2">
+                    <div className="p-2 h-[600px]">
                         <div className="uppercase font-bold text-center pb-2 border0b mb-2">
                             <p className="text-small">
                                 {renderContent("Sign in", "Create account")}
@@ -47,7 +61,15 @@ export default function AuthModel({ isSignIn }: { isSignIn: boolean }) {
                             <h2 className="text-2xl font-light text-center">
                                 {renderContent("Log into your account", "Create your open table account")}
                             </h2>
-                            <AuthModelInputs/>
+                            <AuthModelInputs inputs={inputs} handleChangeInput={handleChangeInput} isSignIn={isSignIn} />
+                            <button className="uppercase bg-red-600 w-full text-white p-3 rounded text-sm mb-5 disabled:bg-grey-400">
+                                {
+                                    renderContent(
+                                        "Sign In",
+                                        "Create Account"
+                                    )
+                                }
+                            </button>
                         </div>
                     </div>
                 </Box>
