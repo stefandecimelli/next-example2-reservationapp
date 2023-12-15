@@ -1,10 +1,11 @@
 "use client"
 
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import AuthModelInputs from './AuthModelInputs';
 import { render } from 'react-dom';
+import useAuth from '../../hooks/useAuth';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -21,15 +22,12 @@ export default function AuthModel({ isSignIn }: { isSignIn: boolean }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const {signin} = useAuth();
 
     const renderContent = (signInContent: string, signUpContent: string) => {
         return isSignIn ? signInContent : signUpContent;
     }
-
-    const handleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
-        setinputs({...inputs, [e.target.name]: e.target.value})
-    }
-
+    
     const [inputs, setinputs] = useState({
         firstName: "",
         lastName: "",
@@ -38,6 +36,30 @@ export default function AuthModel({ isSignIn }: { isSignIn: boolean }) {
         city: "",
         password: ""
     });
+
+    const handleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
+        setinputs({ ...inputs, [e.target.name]: e.target.value })
+    }
+
+    const [disabed, setDisabled] = useState(true);
+
+    useEffect(() => {
+        if (isSignIn) {
+            if (!inputs.password || !inputs.email) {
+                setDisabled(true)
+            }
+        } else {
+            if (inputs.firstName && inputs.lastName && inputs.email && inputs.city && inputs.password && inputs.phone ) {
+                setDisabled(true)
+            }
+        }
+    });
+
+    const handleClick = () => {
+        if(isSignIn) {
+            signin({email: inputs.email, password: inputs.password});
+        }
+    }
 
     return (
         <div>
@@ -62,7 +84,7 @@ export default function AuthModel({ isSignIn }: { isSignIn: boolean }) {
                                 {renderContent("Log into your account", "Create your open table account")}
                             </h2>
                             <AuthModelInputs inputs={inputs} handleChangeInput={handleChangeInput} isSignIn={isSignIn} />
-                            <button className="uppercase bg-red-600 w-full text-white p-3 rounded text-sm mb-5 disabled:bg-grey-400">
+                            <button onClick={handleClick} className="uppercase bg-red-600 w-full text-white p-3 rounded text-sm mb-5 disabled:bg-grey-400" disabled={disabed}>
                                 {
                                     renderContent(
                                         "Sign In",

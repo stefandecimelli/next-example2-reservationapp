@@ -7,33 +7,17 @@ import * as jose from "jose";
 const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { firstname, lastname, email, phone, city, password } = req.body;
+    const { email, password } = req.body;
     const errors: string[] = [];
 
     [
-        {
-            valid: validator.isLength(firstname, { min: 1, max: 20 }),
-            errorMessage: "First name is invalid"
-        },
-        {
-            valid: validator.isLength(lastname, { min: 1, max: 20 }),
-            errorMessage: "Last name is invalid"
-        },
         {
             valid: validator.isEmail(email),
             errorMessage: "Email is invalid"
         },
         {
-            valid: validator.isMobilePhone(phone),
-            errorMessage: "Phone number is invalid"
-        },
-        {
-            valid: validator.isLength(city, { min: 1, max: 20 }),
-            errorMessage: "City is invalid"
-        },
-        {
-            valid: validator.isStrongPassword(password),
-            errorMessage: "Password is not strong enough"
+            valid: validator.isLength(password, {min: 1}),
+            errorMessage: "Password is invalid"
         }
     ].forEach(({ valid, errorMessage }) => !valid && errors.push(errorMessage));
 
@@ -49,22 +33,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
     });
 
-    if (userWithEmail) {
-        return res.status(400).json({ errorMessage: "User with email already exists" })
+    if (!userWithEmail) {
+        return res.status(400).json({ errorMessage: "Email or password is incorrect" })
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const isMatched = await bcrypt.compare(password, userWithEmail.password);
 
-    const user = await prisma.user.create({
-        data: {
-            firt_name: firstname,
-            last_name: lastname,
-            password: hashedPassword,
-            city,
-            phone,
-            email
-        }
-    });
+    if (!isMatched) {
+        return res.status(400).json({ errorMessage: "Email or password is incorrect" })
+    }
 
     const alg = "HS256";
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
@@ -79,5 +56,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             access_token: token
         })
     }
-    
+
+    return res.status(404).json("Unknown endpoint");
 }
