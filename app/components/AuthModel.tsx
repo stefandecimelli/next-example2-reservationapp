@@ -1,11 +1,11 @@
 "use client"
 
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useContext, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import AuthModelInputs from './AuthModelInputs';
-import { render } from 'react-dom';
 import useAuth from '../../hooks/useAuth';
+import { AuthenticationContext } from '../context/AuthContext';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -19,6 +19,7 @@ const style = {
 };
 
 export default function AuthModel({ isSignIn }: { isSignIn: boolean }) {
+    const {error, loading, data, setAuthState} = useContext(AuthenticationContext)
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
